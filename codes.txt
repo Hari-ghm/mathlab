@@ -1,0 +1,414 @@
+% QUESTION 1
+
+% PARAMETRIC PLOTTING
+
+clc
+clear all
+close all
+t = linspace(0, 2*pi,20);
+x = 3+2*cos(t);
+y = 4+2*sin(t);
+plot(x,y,'k-*')
+axis equal
+xlabel('x(m)')
+ylabel('y(m)')
+title('graph of (x-1)^2+(y-3)^2=4')
+legend('(x-1)^2+(y-3)^2=4')
+
+%% 2. MULTIPLE PLOTS IN A FIGURE WINDOW (USING COMMAND HOLD ON)
+clc
+clear all
+close all
+x = linspace(0,1)
+plot(x,x.^2,'r*')
+hold on
+plot(x,sin(x),'g.')
+plot(x,exp(x),'m+')
+legend('x^2','sin(x)','exp(x)')
+
+%% MULTIPLE GRAPHS IN A FIGURE WINDOW BY USING SUBPLOT
+
+clc
+clear all
+close all
+x=0:0.1:2*pi;
+subplot(2,2,1)
+plot(x,sin(x));
+subplot(2,2,2)
+plot(x,cos(x),'r-*');
+subplot(2,2,3)
+plot(x,exp(-x),'go')
+subplot(2,2,4);
+plot(x,sin(3*x),'ms')
+
+%% GRAPH OF A CURVE THROUGH EZPLOT COMMAND
+
+clc
+clear all
+syms x  % Declaring the parameters as a symbolic object
+f=sin(2*x)+cos(3*x)
+figure(1)
+ezplot(f)
+figure(2)
+ezplot(f,[0,3])
+
+%% GRAPH OF A CURVE AND ITS TANGENT LINE IN THE NEIGHBOURHOOD D OF A POINT.
+
+clc
+clear all
+close all
+syms x
+%y=input('enter the function f in terms of x:')% Example, Try the function y=x^2-2*x;
+y=x^2-2*x;
+%x1 = input('Enter x value at which tangent  : '); % Example, Try the point x1 =  2
+x1=2;
+D=[x1-2 x1+2]% Region about x1 (or Neighbourhood of x1)
+ezplot(y,D)   % graph of the curve in D 
+hold on
+
+%Equation of the tangent line passing through x1.
+
+yd = diff(y,x); % Differentiation in MATLAB
+slope = subs(yd,x,x1); % Finding the slope at x1
+y1 = subs(y,x,x1);     % Finding the value of the function at the given point
+plot(x1,y1,'ko')       % plot the point
+
+Tgt_line = slope*(x-x1)+y1 % Tangent Line Equation at the given point
+h = ezplot(Tgt_line,D);    % Plotting the Tangent Line
+set(h,'color','r')
+
+%% EXTREMA OF A SINGLE VARIABLE FUNCTION.
+
+clc
+clear all
+close all
+syms x real  
+f= input('Enter the function f(x):'); 
+fx= diff(f,x)  
+c = solve(fx) 
+cmin = min(double(c)); 
+cmax = max(double(c)); 
+ezplot(f,[cmin-2,cmax+2]) 
+hold on 
+fxx= diff(fx,x)   
+for i = 1:1:size(c) 
+    T1 = subs(fxx, x ,c(i) ); 
+    T3= subs(f, x, c(i)); 
+ if (double(T1)==0) 
+    sprintf('The point x is %d inflexion point',double (c(i)))      
+    else             
+         if (double(T1) < 0)       
+    sprintf('The maximum point x is %d', double(c(i))) 
+    sprintf('The value of the function is %d', double (T3))  
+         else 
+    sprintf('The minimum point x is %d', double(c(i))) 
+                sprintf('The value of the function is %d', double (T3)) 
+         end 
+ end 
+plot(double(c(i)), double(T3), 'r*', 'markersize', 15); 
+end 
+pause 
+h=ezplot(fx,[cmin-2,cmax+2]) 
+set(h,'color','r') 
+hold on 
+pause 
+e=ezplot(fxx,[cmin-4,cmax+4]) 
+set(e,'color','g') 
+hold off 
+
+%% QUESTION 2
+
+% AREA BETWEEN THE CURVES
+
+clc
+clear all
+close all
+syms x 
+y1=input('ENTER THE Y1 REGION VALUE'); 
+y2=input('ENTER THE Y2 REGION VALUE'); 
+t=solve(y1-y2); %(Y1-Y2=0) 
+po=double(t)
+poi=sort(po)
+n=length(poi)
+m1=min(poi)
+m2=max(poi)
+
+ez1=ezplot(y1,[m1-1,m2+1])
+hold on 
+TA=0
+ez2=ezplot(y2,[m1-1,m2+1]) 
+if n>2
+  for i=1:n-1
+  A=int(y1-y2,poi(i),poi(i+1))
+  TA= TA+abs(A)
+  x1 = linspace(poi(i),poi(i+1))
+  yy1 =subs(y1,x,x1)
+  yy2 = subs(y2,x,x1)
+
+%iii)	Creating a polygon:
+
+xx = [x1,fliplr(x1)]
+yy = [yy1,fliplr(yy2)]
+fill(xx,yy,'g') 
+grid on 
+  end
+else
+
+A=int(y1-y2,poi(1),poi(2))
+TA=abs(A)
+x1 = linspace(poi(1),poi(2));
+yy1 =subs(y1,x,x1)
+yy2 = subs(y2,x,x1)
+xx = [x1,fliplr(x1)]
+yy = [yy1,fliplr(yy2)]
+fill(xx,yy,'g')
+end
+
+%% LOCAL MAXIMA AND MINIMA FOR TWO VARIABLES
+
+clc 
+clear all
+close all
+format compact 
+syms x y real 
+f =input('Enter the function f(x,y): '); 
+fx = diff(f,x)
+fy = diff(f,y)
+[ax ay] = solve(fx,fy)
+fxx = diff(fx,x)
+D = fxx*diff(fy,y) - diff(fx,y)^2%ln-m^2
+
+% Collecting critical points
+
+r=1; 
+for k=1:1:size(ax) 
+if ((imag(ax(k))==0)&&(imag(ay(k))==0)) 
+ptx(r)=ax(k); 
+pty(r)=ay(k); 
+r=r+1; 
+end 
+end 
+
+% Visulalizing the function
+
+a1=max(double(ax)) 
+a2=min(double(ax)) 
+b1=max(double(ay)) 
+b2=min(double(ay)) 
+ezsurf(f,[a2-.5,a1+.5,b2-.5,b1+.5]) 
+colormap('summer'); 
+shading interp 
+hold on 
+
+% Finding the maximum and minimum values of the function and their visulaization
+
+for r1=1:1:(r-1) 
+T1=subs(subs(D,x,ptx(r1)),y,pty(r1))
+T2=subs(subs(fxx,x,ptx(r1)),y,pty(r1))
+if (double(T1) == 0) 
+sprintf('The point (x,y) is (%d,%d) and need further investigation', double(ptx(r1)),double(pty(r1))) 
+elseif (double(T1) < 0) 
+T3=subs(subs(f,x,ptx(r1)),y,pty(r1)) 
+sprintf('The point (x,y) is (%d,%d) a saddle point', double(ptx(r1)),double(pty(r1))) 
+plot3(double(ptx(r1)),double(pty(r1)),double(T3),'b.','markersize',30); 
+else 
+if (double(T2) < 0) 
+sprintf('The maximum point(x,y) is (%d, %d)', double(ptx(r1)),double(pty(r1))) 
+T3=subs(subs(f,x,ptx(r1)),y,pty(r1)) 
+sprintf('The value of the function is %d', double(T3)) 
+plot3(double(ptx(r1)),double(pty(r1)),double(T3),'r+','markersize',30); 
+else 
+sprintf('The minimum point(x,y) is (%d, %d)', double(ptx(r1)),double(pty(r1))) 
+T3=subs(subs(f,x,ptx(r1)),y,pty(r1)) 
+sprintf('The value of the function is %d', double(T3)) 
+plot3(double(ptx(r1)),double(pty(r1)),double(T3),'m*','markersize',30); 
+end 
+end 
+end 
+
+%% LAGRANGE MULTIPLIER
+
+clc
+clear all
+close all
+syms x y lam real 
+f= input('Enter f(x,y) to be extremized : '); 
+g= input('Enter the constraint function g(x,y) : '); 
+
+% Computing Partial derivatives and finding the critical points
+
+F=f-lam*g
+Fx=diff(F,x)
+Fy=diff(F,y)
+[ax,ay,alam]=solve([Fx,Fy,g],x,y,lam) 
+ax=double(ax)
+ay=double(ay)
+
+% Collecting critical points
+
+r=1; 
+for k=1:1:size(ax) 
+if ((imag(ax(k))==0)&&(imag(ay(k))==0))    
+ptx(r)=ax(k); 
+pty(r)=ay(k); 
+      r=r+1; 
+end 
+end 
+
+% Computing the values at the critical points
+ax=ptx
+ay=pty
+T = subs(f,{x,y},{ax,ay})
+T=double(T)
+epx=3 
+epy=3 
+figure (1)
+for i = 1:length(T)
+D=[ax(i)-epx ax(i)+epx ay(i)-epy ay(i)+epy] 
+fprintf('The critical point (x,y) is (%1.3f,%1.3f).',ax(i),ay(i)) 
+fprintf('The value of the function is %1.3f\n',T(i)) 
+ezcontour(f,D) 
+hold on 
+h = ezplot(g,D); 
+set(h,'Color',[1,0.7,0.9]) 
+plot(ax(i),ay(i),'k.','markersize',15+2*i) 
+end 
+
+% Finding the Maximum and minimum at those points:
+
+f_min=min(T)
+f_max=max(T) 
+
+%% PARTIAL DERIVATIVE
+
+clc
+clear all
+format compact
+syms x y 
+z = input('Enter the two dimensional function f(x,y): ');
+x1 = input('enter the x value at which the derivative has to be evaluated: ');
+y1 = input('enter the y value at which the derivative has to be evaluated: ');
+
+% Slope Calculation:
+z1 = subs(subs(z,x,x1),y,y1)
+ezsurf(z,[x1-2 x1+2])
+f1 = diff(z,x)
+slopex = subs(subs(f1,x,x1),y,y1);
+
+% Visualization of the plane in which the partial derivative is sought:
+[x2,z2]=meshgrid(x1-2:.25:x1+2,0:0.5:10);
+y2=y1*ones(size(x2));
+hold on
+h1=surf(x2,y2,z2);
+set(h1,'FaceColor',[0.7,0.7,0.7],'EdgeColor','none')
+
+% The Tangent line:
+t=linspace(-1,1);
+x3=x1+t;
+y3=y1*ones(size(t));
+z3=z1+slopex*t;
+line(x3,y3,z3,'color','blue','linewidth',2)
+
+%% QUESTION 3
+
+% TRIPLE INEGRATION
+
+clc
+clear all
+close all
+syms x y z real
+sol=int(int(int(6*x*y,0,1+x+y),y,0,sqrt(x)),x,0,1)
+viewSolid(z,0+0*x*y,1+x+y,y,0+0*x,sqrt(x),x,0,1)
+axis equal;
+grid on;
+
+%% GRADIENT 
+
+clc 
+clear all
+close all
+syms x y
+f=input('enter the function f(x,y):'); 
+F=gradient(f)
+P = inline(vectorize(F(1)), 'x', 'y');
+Q = inline(vectorize(F(2)), 'x','y'); 
+x = linspace(-2, 2, 10);
+y = x;
+[X,Y] = meshgrid(x,y); 
+U = P(X,Y);
+V = Q(X,Y);
+quiver(X,Y,U,V,1) 
+axis on
+xlabel('x')
+ylabel('y') 
+hold on
+ezcontour(f,[-2 2])
+
+%% CURL AND DIVERGENCE 
+
+clc 
+close all
+clear all
+syms x y z real
+F=input('enter the vector as i, j and k order in vector form:') 
+curl_F = curl(F, [x y z])
+div_F = divergence(F, [x y z])
+
+%% SCALAR POTENTIAL 
+
+clc
+close all
+clear all
+syms x y z real
+F=input( 'enter the vector as i,j and k order in vector form:') 
+curl_F = curl(F, [x y z])
+if (curl_F ==[0 0 0])
+f = potential(F, [x y z]) 
+else
+sprintf('curl_F is not equal to zero') 
+end
+
+%% Find the volume of the solid bounded by the plane z=0 and the paraboloid z=1-x^2-y^2
+
+clc
+clear all
+syms r theta 
+V = int(int((1-r^2)*r, r, 0, 1), theta, 0, 2*pi)
+fsurf(r*cos(theta),r*sin(theta), 1-r^2, [0 1 0 2*pi], 'MeshDensity', 20)
+axis equal; axis([-2 2 -2 2 0 1.3])
+xticks(-2:2); yticks(-2:2); zticks(0:1.3)
+xlabel('x'); ylabel('y')
+
+%% Find the volume of the solid that lies under the paraboloid  z=x^2+y^2 and above the xy- plane, and inside the cylinder  x^2+y^2=2x
+
+clc
+clear all
+syms r theta z r1
+V = int(int((r^2)*r, r, 0,2*cos(theta) ), theta, 0,2*pi)
+r = 2*cos(theta), x = r*cos(theta), y = r*sin(theta)
+fsurf(x,y,z, [0 2*pi 0 1], 'MeshDensity', 16)
+axis equal; xlabel('x'); ylabel('y'); zlabel('z')
+zticks(0:1.5)
+hold on
+fsurf(r1*cos(theta),r1*sin(theta),r1^2, [0 1 0 2*pi], 'MeshDensity', 20)
+
+%%  A solid E lies within the cylinder x^2+y^2=1, below the plane z =4, and above the paraboloid 〖z=1-(x〗^2+y^2). The density at any point is proportional to its distance from the axis of the cylinder. Find the mass of E.
+
+syms r z theta K
+Ma= int(int(int((K*r)*r, z, 1-r^2,4), r ,0, 1),theta,0,2*pi) % integration
+
+x = r*cos(theta), y = r*sin(theta), s = sym(4)
+fsurf(x,y,1-r^2, [0 1 0 2*pi], 'g', 'EdgeColor', 'none');  % plotting paraboloid
+hold on 
+fsurf(1*cos(theta), 1*sin(theta), r, 'y', [0  4  0 2*pi], 'EdgeColor', 'none')  % plotting cylinder of radius 1 with height z = 4
+fsurf(x,y,s, [0 1 0 2*pi], 'b', 'EdgeColor', 'none'); % plotting circular  plane z=4.
+hold on 
+axis equal; xlabel('x'); ylabel('y'); zlabel('z');
+alpha 0.5
+
+%%
+syms r z phi rho theta
+rho=5
+x= rho*sin(phi)*cos(theta), y = rho*sin(phi)*sin(theta), z= rho*cos(phi) ;
+fsurf(x,y,z, [0 pi 0 2*pi], 'g', 'MeshDensity', 20); 
+
